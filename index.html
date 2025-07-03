@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JW Ministry Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #2574a9;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: var(--accent-color);
+        }
+
+        /* Auth Section */
+        .auth-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2574a9 0%, #3498db 100%);
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: fadeInUp 0.5s;
+        }
+
+        .auth-container h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .auth-input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .auth-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .auth-btn {
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #login-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #login-btn:hover {
+            background-color: #1e5f8a;
+        }
+
+        #signup-btn {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        #signup-btn:hover {
+            background-color: #d5dbdb;
+        }
+
+        .auth-btn-google {
+            background-color: #fff;
+            color: #757575;
+            border: 1px solid #ddd;
+        }
+
+        .auth-btn-google:hover {
+            background-color: #f5f5f5;
+        }
+
+        .auth-btn-guest {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .auth-btn-guest:hover {
+            background-color: rgba(37, 116, 169, 0.1);
+        }
+
+        .auth-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .auth-message.error {
+            background-color: #fdecea;
+            color: #d32f2f;
+        }
+
+        .auth-message.success {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        /* App Section */
+        .app-section {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            color: var(--primary-color);
+            font-size: 22px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--light-color);
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Navigation */
+        .app-nav {
+            display: flex;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .nav-btn i {
+            font-size: 20px;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--light-color);
+        }
+
+        .nav-btn.active {
+            color: var(--primary-color);
+            background-color: rgba(37, 116, 169, 0.1);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        /* Content Sections */
+        .content-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .add-btn, .stats-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .add-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .add-btn:hover {
+            background-color: #1e5f8a;
+        }
+
+        .stats-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .stats-btn:hover {
+            background-color: #219653;
+        }
+
+        /* Search */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-right: 45px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dark-color);
+            cursor: pointer;
+        }
+
+        /* Lists */
+        .contacts-list, .records-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-item, .record-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .contact-item:hover, .record-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info, .record-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .contact-details, .record-details {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .contact-details span, .record-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .contact-actions, .record-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edit-btn {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .edit-btn:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .delete-btn {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--accent-color);
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: fadeInUp 0.3s;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background-color: #1e5f8a;
+        }
+
+        .cancel-btn {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .cancel-btn:hover {
+            background-color: #d5dbdb;
+        }
+
+        /* Stats Modal */
+        .stats-content {
+            max-width: 600px;
+        }
+
+        .stats-container {
+            margin: 20px 0;
+        }
+
+        .stats-item {
+            margin-bottom: 15px;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .stats-title {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .stats-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .stats-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .share-btn:hover {
+            background-color: #219653;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-pending {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-completed {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-not-interested {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 20px;
+            }
+
+            .app-nav {
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                flex: 1 1 100%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+            }
+
+            .save-btn, .cancel-btn {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Notification -->
+        <div id="notification" class="notification">
+            <i class="fas fa-check-circle"></i>
+            <span id="notification-message">Saved successfully</span>
+        </div>
+
+        <!-- Auth Section -->
+        <div id="auth-section" class="auth-section">
+            <div class="auth-container">
+                <h1>JW Ministry Assistant</h1>
+                <div class="auth-form">
+                    <input type="email" id="email" placeholder="Email" class="auth-input">
+                    <input type="password" id="password" placeholder="Password" class="auth-input">
+                    <button id="login-btn" class="auth-btn">Login</button>
+                    <button id="signup-btn" class="auth-btn auth-btn-secondary">Sign Up</button>
+                    <button id="google-auth-btn" class="auth-btn auth-btn-google">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                    <button id="guest-btn" class="auth-btn auth-btn-guest">Continue as Guest</button>
+                    <div id="auth-message" class="auth-message"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Section (hidden initially) -->
+        <div id="app-section" class="app-section">
+            <!-- Header -->
+            <header class="app-header">
+                <h1>JW Ministry Assistant</h1>
+                <div class="user-info">
+                    <img id="user-avatar" src="https://ui-avatars.com/api/?name=U&background=2574a9&color=fff" alt="User Avatar" class="user-avatar">
+                    <span id="user-name" class="user-name">User</span>
+                    <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </header>
+
+            <!-- Navigation -->
+            <nav class="app-nav">
+                <button class="nav-btn active" data-section="contacts"><i class="fas fa-address-book"></i> <span>Contacts</span></button>
+                <button class="nav-btn" data-section="pioneer"><i class="fas fa-star"></i> <span>Pioneer</span></button>
+                <button class="nav-btn" data-section="publisher"><i class="fas fa-user"></i> <span>Publisher</span></button>
+            </nav>
+
+            <!-- Content Sections -->
+            <div class="content-container">
+                <!-- Contacts Section -->
+                <section id="contacts-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Contacts</h2>
+                        <button id="add-contact-btn" class="add-btn"><i class="fas fa-plus"></i> Add Contact</button>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="contact-search" placeholder="Search contacts..." class="search-input">
+                        <button id="contact-search-btn" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="contacts-list" id="contacts-list">
+                        <!-- Contacts will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-address-book"></i>
+                            <p>No contacts found</p>
+                            <button id="empty-add-contact-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Contact</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pioneer Section -->
+                <section id="pioneer-section" class="content-section hidden">
+                    <div class="section-header">
+                        <h2>Pioneer Records</h2>
+                        <div>
+                            <button id="add-pioneer-btn" class="add-btn"><i class="fas fa-plus"></i> Add Record</button>
+                            <button id="pioneer-stats-btn" class="stats-btn"><i class="fas fa-chart-bar"></i> Stats</button>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="pioneer-search" placeholder="Search records..." class="search-input">
+                        <button id="pioneer-search-btn" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="records-list" id="pioneer-list">
+                        <!-- Pioneer records will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>No pioneer records found</p>
+                            <button id="empty-add-pioneer-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Publisher Section -->
+                <section id="publisher-section" class="content-section hidden">
+                    <div class="section-header">
+                        <h2>Publisher Records</h2>
+                        <div>
+                            <button id="add-publisher-btn" class="add-btn"><i class="fas fa-plus"></i> Add Record</button>
+                            <button id="publisher-stats-btn" class="stats-btn"><i class="fas fa-chart-bar"></i> Stats</button>
+                        </div>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="publisher-search" placeholder="Search records..." class="search-input">
+                        <button id="publisher-search-btn" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="records-list" id="publisher-list">
+                        <!-- Publisher records will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-user"></i>
+                            <p>No publisher records found</p>
+                            <button id="empty-add-publisher-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <!-- Contact Modal -->
+        <div id="contact-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="contact-modal-title">Add New Contact</h2>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Name*</label>
+                        <input type="text" id="contact-name" placeholder="Enter name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Phone Number</label>
+                        <input type="tel" id="contact-phone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-address">Address</label>
+                        <input type="text" id="contact-address" placeholder="Enter address">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-publication">Publication Placed</label>
+                        <input type="text" id="contact-publication" placeholder="Enter publication">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-date">Return Visit Date</label>
+                        <input type="date" id="contact-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-time">Return Visit Time</label>
+                        <input type="time" id="contact-time">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-status">Status</label>
+                        <select id="contact-status">
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="not-interested">Not Interested</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-notes">Notes</label>
+                        <textarea id="contact-notes" placeholder="Enter additional notes..."></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pioneer Modal -->
+        <div id="pioneer-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="pioneer-modal-title">Add Pioneer Record</h2>
+                <form id="pioneer-form">
+                    <div class="form-group">
+                        <label for="pioneer-date">Date*</label>
+                        <input type="date" id="pioneer-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pioneer-hours">Hours*</label>
+                        <input type="number" id="pioneer-hours" min="0" step="0.5" placeholder="Enter hours" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pioneer-minutes">Additional Minutes</label>
+                        <input type="number" id="pioneer-minutes" min="0" max="59" placeholder="Enter minutes">
+                    </div>
+                    <div class="form-group">
+                        <label for="pioneer-studies">Bible Studies Conducted</label>
+                        <input type="number" id="pioneer-studies" min="0" placeholder="Enter number of studies">
+                    </div>
+                    <div class="form-group">
+                        <label for="pioneer-return-visits">Return Visits</label>
+                        <input type="number" id="pioneer-return-visits" min="0" placeholder="Enter number of return visits">
+                    </div>
+                    <div class="form-group">
+                        <label for="pioneer-notes">Notes</label>
+                        <textarea id="pioneer-notes" placeholder="Enter notes about the day..."></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Publisher Modal -->
+        <div id="publisher-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="publisher-modal-title">Add Publisher Record</h2>
+                <form id="publisher-form">
+                    <div class="form-group">
+                        <label for="publisher-date">Date*</label>
+                        <input type="date" id="publisher-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="publisher-studies">Bible Studies Conducted</label>
+                        <input type="number" id="publisher-studies" min="0" placeholder="Enter number of studies">
+                    </div>
+                    <div class="form-group">
+                        <label for="publisher-participated">Participated in Ministry</label>
+                        <select id="publisher-participated">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="publisher-notes">Notes</label>
+                        <textarea id="publisher-notes" placeholder="Enter notes about the day..."></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Modal -->
+        <div id="stats-modal" class="modal">
+            <div class="modal-content stats-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="stats-modal-title">Monthly Statistics</h2>
+                <div class="stats-container" id="stats-container">
+                    <!-- Stats will be loaded here -->
+                    <div class="stats-item">
+                        <div class="stats-header">
+                            <span class="stats-title">Total Hours</span>
+                            <span class="stats-value" id="total-hours">0</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="hours-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-header">
+                            <span class="stats-title">Average Daily Hours</span>
+                            <span class="stats-value" id="avg-hours">0</span>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-header">
+                            <span class="stats-title">Bible Studies</span>
+                            <span class="stats-value" id="total-studies">0</span>
+                        </div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-header">
+                            <span class="stats-title">Return Visits</span>
+                            <span class="stats-value" id="total-return-visits">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-buttons">
+                    <button id="share-whatsapp-btn" class="share-btn"><i class="fab fa-whatsapp"></i> Share via WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase and App Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyDMNC-oVXg6eCxirQgBIaIAzJijUgBLeP4",
+  authDomain: "jw-ministry-tracker.firebaseapp.com",
+  projectId: "jw-ministry-tracker",
+  storageBucket: "jw-ministry-tracker.firebasestorage.app",
+  messagingSenderId: "920829084379",
+  appId: "1:920829084379:web:afce3269d46113c398c2fe",
+  measurementId: "G-RM916N5WTX"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const googleAuthBtn = document.getElementById('google-auth-btn');
+        const guestBtn = document.getElementById('guest-btn');
+        const authMessage = document.getElementById('auth-message');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userName = document.getElementById('user-name');
+        const userAvatar = document.getElementById('user-avatar');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+
+        // Navigation
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        // Contacts
+        const contactsSection = document.getElementById('contacts-section');
+        const contactsList = document.getElementById('contacts-list');
+        const addContactBtn = document.getElementById('add-contact-btn');
+        const emptyAddContactBtn = document.getElementById('empty-add-contact-btn');
+        const contactSearch = document.getElementById('contact-search');
+        const contactSearchBtn = document.getElementById('contact-search-btn');
+        const contactModal = document.getElementById('contact-modal');
+        const contactForm = document.getElementById('contact-form');
+        const contactModalTitle = document.getElementById('contact-modal-title');
+
+        // Pioneer
+        const pioneerSection = document.getElementById('pioneer-section');
+        const pioneerList = document.getElementById('pioneer-list');
+        const addPioneerBtn = document.getElementById('add-pioneer-btn');
+        const emptyAddPioneerBtn = document.getElementById('empty-add-pioneer-btn');
+        const pioneerSearch = document.getElementById('pioneer-search');
+        const pioneerSearchBtn = document.getElementById('pioneer-search-btn');
+        const pioneerModal = document.getElementById('pioneer-modal');
+        const pioneerForm = document.getElementById('pioneer-form');
+        const pioneerModalTitle = document.getElementById('pioneer-modal-title');
+        const pioneerStatsBtn = document.getElementById('pioneer-stats-btn');
+
+        // Publisher
+        const publisherSection = document.getElementById('publisher-section');
+        const publisherList = document.getElementById('publisher-list');
+        const addPublisherBtn = document.getElementById('add-publisher-btn');
+        const emptyAddPublisherBtn = document.getElementById('empty-add-publisher-btn');
+        const publisherSearch = document.getElementById('publisher-search');
+        const publisherSearchBtn = document.getElementById('publisher-search-btn');
+        const publisherModal = document.getElementById('publisher-modal');
+        const publisherForm = document.getElementById('publisher-form');
+        const publisherModalTitle = document.getElementById('publisher-modal-title');
+        const publisherStatsBtn = document.getElementById('publisher-stats-btn');
+
+        // Stats Modal
+        const statsModal = document.getElementById('stats-modal');
+        const statsContainer = document.getElementById('stats-container');
+        const shareWhatsappBtn = document.getElementById('share-whatsapp-btn');
+
+        // Close buttons
+        const closeBtns = document.querySelectorAll('.close-btn');
+        const cancelBtns = document.querySelectorAll('.cancel-btn');
+
+        // State variables
+        let currentUser = null;
+        let currentContactId = null;
+        let currentPioneerId = null;
+        let currentPublisherId = null;
+        let currentSection = 'contacts';
+
+        // Initialize the app
+        function initApp() {
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in
+                    currentUser = user;
+                    showAppSection();
+                    updateUserInfo();
+                    loadData();
+                } else {
+                    // No user is signed in
+                    currentUser = null;
+                    showAuthSection();
+                }
+            });
+
+            // Event listeners
+            setupEventListeners();
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Auth buttons
+            loginBtn.addEventListener('click', loginWithEmail);
+            signupBtn.addEventListener('click', signUpWithEmail);
+            googleAuthBtn.addEventListener('click', loginWithGoogle);
+            guestBtn.addEventListener('click', continueAsGuest);
+            logoutBtn.addEventListener('click', logout);
+
+            // Navigation
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchSection(btn.dataset.section));
+            });
+
+            // Contacts
+            addContactBtn.addEventListener('click', () => openContactModal());
+            emptyAddContactBtn.addEventListener('click', () => openContactModal());
+            contactForm.addEventListener('submit', saveContact);
+            contactSearchBtn.addEventListener('click', searchContacts);
+            contactSearch.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchContacts();
+            });
+
+            // Pioneer
+            addPioneerBtn.addEventListener('click', () => openPioneerModal());
+            emptyAddPioneerBtn.addEventListener('click', () => openPioneerModal());
+            pioneerForm.addEventListener('submit', savePioneerRecord);
+            pioneerSearchBtn.addEventListener('click', searchPioneerRecords);
+            pioneerSearch.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchPioneerRecords();
+            });
+            pioneerStatsBtn.addEventListener('click', showPioneerStats);
+
+            // Publisher
+            addPublisherBtn.addEventListener('click', () => openPublisherModal());
+            emptyAddPublisherBtn.addEventListener('click', () => openPublisherModal());
+            publisherForm.addEventListener('submit', savePublisherRecord);
+            publisherSearchBtn.addEventListener('click', searchPublisherRecords);
+            publisherSearch.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchPublisherRecords();
+            });
+            publisherStatsBtn.addEventListener('click', showPublisherStats);
+
+            // Modals
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', closeAllModals);
+            });
+
+            cancelBtns.forEach(btn => {
+                btn.addEventListener('click', closeAllModals);
+            });
+
+            // Stats
+            shareWhatsappBtn.addEventListener('click', shareStatsViaWhatsApp);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeAllModals();
+                }
+            });
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            notificationMessage.textContent = message;
+            notification.className = isError ? 'notification error' : 'notification';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auth functions
+        function loginWithEmail() {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showAuthMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showAuthMessage('Login successful!', 'success');
+                })
+                .catch(error => {
+                    showAuthMessage(error.message, 'error');
+                });
+        }
+
+        function signUpWithEmail() {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showAuthMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthMessage('Password should be at least 6 characters', 'error');
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    showAuthMessage('Account created successfully!', 'success');
+                })
+                .catch(error => {
+                    showAuthMessage(error.message, 'error');
+                });
+        }
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => {
+                    showAuthMessage('Google login successful!', 'success');
+                })
+                .catch(error => {
+                    showAuthMessage(error.message, 'error');
+                });
+        }
+
+        function continueAsGuest() {
+            auth.signInAnonymously()
+                .then(() => {
+                    showAuthMessage('Continuing as guest', 'success');
+                })
+                .catch(error => {
+                    showAuthMessage(error.message, 'error');
+                });
+        }
+
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    // Clear all data from memory
+                    currentUser = null;
+                    currentContactId = null;
+                    currentPioneerId = null;
+                    currentPublisherId = null;
+                    clearAllLists();
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                });
+        }
+
+        function showAuthMessage(message, type) {
+            authMessage.textContent = message;
+            authMessage.className = 'auth-message ' + type;
+            setTimeout(() => {
+                authMessage.textContent = '';
+                authMessage.className = 'auth-message';
+            }, 5000);
+        }
+
+        // UI Functions
+        function showAuthSection() {
+            authSection.style.display = 'flex';
+            appSection.style.display = 'none';
+            emailInput.value = '';
+            passwordInput.value = '';
+        }
+
+        function showAppSection() {
+            authSection.style.display = 'none';
+            appSection.style.display = 'block';
+        }
+
+        function updateUserInfo() {
+            if (!currentUser) return;
+
+            if (currentUser.isAnonymous) {
+                userName.textContent = 'Guest';
+                userAvatar.src = 'https://ui-avatars.com/api/?name=G&background=7f8c8d&color=fff';
+                return;
+            }
+
+            userName.textContent = currentUser.displayName || currentUser.email || 'User';
+            
+            if (currentUser.photoURL) {
+                userAvatar.src = currentUser.photoURL;
+            } else {
+                const initials = userName.textContent.charAt(0).toUpperCase();
+                userAvatar.src = `https://ui-avatars.com/api/?name=${initials}&background=2574a9&color=fff`;
+            }
+        }
+
+        function switchSection(section) {
+            // Update active nav button
+            navBtns.forEach(btn => {
+                if (btn.dataset.section === section) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Show the selected section
+            contentSections.forEach(sec => {
+                if (sec.id === `${section}-section`) {
+                    sec.classList.remove('hidden');
+                    currentSection = section;
+                } else {
+                    sec.classList.add('hidden');
+                }
+            });
+        }
+
+        // Modal functions
+        function openContactModal(id = null) {
+            currentContactId = id;
+            
+            if (id) {
+                // Editing existing contact
+                contactModalTitle.textContent = 'Edit Contact';
+                db.collection('contacts').doc(id).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('contact-name').value = data.name || '';
+                            document.getElementById('contact-phone').value = data.phone || '';
+                            document.getElementById('contact-address').value = data.address || '';
+                            document.getElementById('contact-publication').value = data.publication || '';
+                            document.getElementById('contact-date').value = data.returnDate || '';
+                            document.getElementById('contact-time').value = data.returnTime || '';
+                            document.getElementById('contact-status').value = data.status || 'pending';
+                            document.getElementById('contact-notes').value = data.notes || '';
+                        }
+                    });
+            } else {
+                // Adding new contact
+                contactModalTitle.textContent = 'Add New Contact';
+                contactForm.reset();
+            }
+            
+            contactModal.classList.add('active');
+        }
+
+        function openPioneerModal(id = null) {
+            currentPioneerId = id;
+            
+            if (id) {
+                // Editing existing record
+                pioneerModalTitle.textContent = 'Edit Pioneer Record';
+                db.collection('pioneerRecords').doc(id).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('pioneer-date').value = data.date || '';
+                            document.getElementById('pioneer-hours').value = data.hours || 0;
+                            document.getElementById('pioneer-minutes').value = data.minutes || 0;
+                            document.getElementById('pioneer-studies').value = data.studies || 0;
+                            document.getElementById('pioneer-return-visits').value = data.returnVisits || 0;
+                            document.getElementById('pioneer-notes').value = data.notes || '';
+                        }
+                    });
+            } else {
+                // Adding new record
+                pioneerModalTitle.textContent = 'Add Pioneer Record';
+                pioneerForm.reset();
+                // Set default date to today
+                document.getElementById('pioneer-date').valueAsDate = new Date();
+            }
+            
+            pioneerModal.classList.add('active');
+        }
+
+        function openPublisherModal(id = null) {
+            currentPublisherId = id;
+            
+            if (id) {
+                // Editing existing record
+                publisherModalTitle.textContent = 'Edit Publisher Record';
+                db.collection('publisherRecords').doc(id).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('publisher-date').value = data.date || '';
+                            document.getElementById('publisher-studies').value = data.studies || 0;
+                            document.getElementById('publisher-participated').value = data.participated || 'yes';
+                            document.getElementById('publisher-notes').value = data.notes || '';
+                        }
+                    });
+            } else {
+                // Adding new record
+                publisherModalTitle.textContent = 'Add Publisher Record';
+                publisherForm.reset();
+                // Set default date to today
+                document.getElementById('publisher-date').valueAsDate = new Date();
+            }
+            
+            publisherModal.classList.add('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            currentContactId = null;
+            currentPioneerId = null;
+            currentPublisherId = null;
+        }
+
+        // Data functions
+        function loadData() {
+            if (!currentUser) return;
+
+            loadContacts();
+            loadPioneerRecords();
+            loadPublisherRecords();
+        }
+
+        function loadContacts() {
+            contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-address-book"></i><p>Loading contacts...</p></div>';
+            
+            db.collection('contacts')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('name')
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-address-book"></i><p>No contacts found</p><button id="empty-add-contact-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Contact</button></div>';
+                        document.getElementById('empty-add-contact-btn').addEventListener('click', () => openContactModal());
+                        return;
+                    }
+
+                    contactsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const contact = doc.data();
+                        const statusClass = `status-${contact.status || 'pending'}`;
+                        
+                        const contactItem = document.createElement('div');
+                        contactItem.className = 'contact-item';
+                        contactItem.innerHTML = `
+                            <div class="contact-info">
+                                <div class="contact-name">${contact.name}</div>
+                                <div class="contact-details">
+                                    ${contact.phone ? `<span><i class="fas fa-phone"></i> ${contact.phone}</span>` : ''}
+                                    ${contact.publication ? `<span><i class="fas fa-book"></i> ${contact.publication}</span>` : ''}
+                                    ${contact.returnDate ? `<span><i class="fas fa-calendar-alt"></i> ${formatDate(contact.returnDate)}</span>` : ''}
+                                    <span class="status-badge ${statusClass}"><i class="fas fa-${getStatusIcon(contact.status)}"></i> ${capitalizeFirstLetter(contact.status || 'pending')}</span>
+                                </div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `;
+                        contactsList.appendChild(contactItem);
+                    });
+
+                    // Add event listeners to edit and delete buttons
+                    document.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openContactModal(btn.dataset.id);
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deleteContact(btn.dataset.id);
+                        });
+                    });
+
+                    // Add click event to contact items
+                    document.querySelectorAll('.contact-item').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                const id = item.querySelector('.edit-btn').dataset.id;
+                                openContactModal(id);
+                            }
+                        });
+                    });
+                }, error => {
+                    console.error('Error loading contacts:', error);
+                    contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading contacts</p></div>';
+                });
+        }
+
+        function loadPioneerRecords() {
+            pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>Loading records...</p></div>';
+            
+            db.collection('pioneerRecords')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('date', 'desc')
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No pioneer records found</p><button id="empty-add-pioneer-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button></div>';
+                        document.getElementById('empty-add-pioneer-btn').addEventListener('click', () => openPioneerModal());
+                        return;
+                    }
+
+                    pioneerList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        const totalMinutes = (record.hours * 60) + (record.minutes || 0);
+                        const hours = Math.floor(totalMinutes / 60);
+                        const minutes = totalMinutes % 60;
+                        
+                        const recordItem = document.createElement('div');
+                        recordItem.className = 'record-item';
+                        recordItem.innerHTML = `
+                            <div class="record-info">
+                                <div class="contact-name">${formatDate(record.date)}</div>
+                                <div class="record-details">
+                                    <span><i class="fas fa-clock"></i> ${hours}h ${minutes}m</span>
+                                    ${record.studies ? `<span><i class="fas fa-book-bible"></i> ${record.studies} studies</span>` : ''}
+                                    ${record.returnVisits ? `<span><i class="fas fa-people-arrows"></i> ${record.returnVisits} return visits</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="record-actions">
+                                <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `;
+                        pioneerList.appendChild(recordItem);
+                    });
+
+                    // Add event listeners to edit and delete buttons
+                    document.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openPioneerModal(btn.dataset.id);
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deletePioneerRecord(btn.dataset.id);
+                        });
+                    });
+
+                    // Add click event to record items
+                    document.querySelectorAll('.record-item').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                const id = item.querySelector('.edit-btn').dataset.id;
+                                openPioneerModal(id);
+                            }
+                        });
+                    });
+                }, error => {
+                    console.error('Error loading pioneer records:', error);
+                    pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading records</p></div>';
+                });
+        }
+
+        function loadPublisherRecords() {
+            publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-user"></i><p>Loading records...</p></div>';
+            
+            db.collection('publisherRecords')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('date', 'desc')
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-user"></i><p>No publisher records found</p><button id="empty-add-publisher-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button></div>';
+                        document.getElementById('empty-add-publisher-btn').addEventListener('click', () => openPublisherModal());
+                        return;
+                    }
+
+                    publisherList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        
+                        const recordItem = document.createElement('div');
+                        recordItem.className = 'record-item';
+                        recordItem.innerHTML = `
+                            <div class="record-info">
+                                <div class="contact-name">${formatDate(record.date)}</div>
+                                <div class="record-details">
+                                    <span><i class="fas fa-${record.participated === 'yes' ? 'check' : 'times'}"></i> ${record.participated === 'yes' ? 'Participated' : 'Did not participate'}</span>
+                                    ${record.studies ? `<span><i class="fas fa-book-bible"></i> ${record.studies} studies</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="record-actions">
+                                <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `;
+                        publisherList.appendChild(recordItem);
+                    });
+
+                    // Add event listeners to edit and delete buttons
+                    document.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openPublisherModal(btn.dataset.id);
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deletePublisherRecord(btn.dataset.id);
+                        });
+                    });
+
+                    // Add click event to record items
+                    document.querySelectorAll('.record-item').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                const id = item.querySelector('.edit-btn').dataset.id;
+                                openPublisherModal(id);
+                            }
+                        });
+                    });
+                }, error => {
+                    console.error('Error loading publisher records:', error);
+                    publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading records</p></div>';
+                });
+        }
+
+        function searchContacts() {
+            const searchTerm = contactSearch.value.toLowerCase();
+            
+            if (!searchTerm) {
+                loadContacts();
+                return;
+            }
+
+            db.collection('contacts')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('name')
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-address-book"></i><p>No contacts found</p></div>';
+                        return;
+                    }
+
+                    contactsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const contact = doc.data();
+                        
+                        // Check if the contact matches the search term
+                        if (contact.name.toLowerCase().includes(searchTerm)) {
+                            const statusClass = `status-${contact.status || 'pending'}`;
+                            
+                            const contactItem = document.createElement('div');
+                            contactItem.className = 'contact-item';
+                            contactItem.innerHTML = `
+                                <div class="contact-info">
+                                    <div class="contact-name">${contact.name}</div>
+                                    <div class="contact-details">
+                                        ${contact.phone ? `<span><i class="fas fa-phone"></i> ${contact.phone}</span>` : ''}
+                                        ${contact.publication ? `<span><i class="fas fa-book"></i> ${contact.publication}</span>` : ''}
+                                        ${contact.returnDate ? `<span><i class="fas fa-calendar-alt"></i> ${formatDate(contact.returnDate)}</span>` : ''}
+                                        <span class="status-badge ${statusClass}"><i class="fas fa-${getStatusIcon(contact.status)}"></i> ${capitalizeFirstLetter(contact.status || 'pending')}</span>
+                                    </div>
+                                </div>
+                                <div class="contact-actions">
+                                    <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                    <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `;
+                            contactsList.appendChild(contactItem);
+                        }
+                    });
+
+                    if (contactsList.children.length === 0) {
+                        contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No contacts match your search</p></div>';
+                    } else {
+                        // Add event listeners to edit and delete buttons
+                        document.querySelectorAll('.edit-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openContactModal(btn.dataset.id);
+                            });
+                        });
+
+                        document.querySelectorAll('.delete-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                deleteContact(btn.dataset.id);
+                            });
+                        });
+
+                        // Add click event to contact items
+                        document.querySelectorAll('.contact-item').forEach(item => {
+                            item.addEventListener('click', (e) => {
+                                if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                    const id = item.querySelector('.edit-btn').dataset.id;
+                                    openContactModal(id);
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching contacts:', error);
+                    contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error searching contacts</p></div>';
+                });
+        }
+
+        function searchPioneerRecords() {
+            const searchTerm = pioneerSearch.value.toLowerCase();
+            
+            if (!searchTerm) {
+                loadPioneerRecords();
+                return;
+            }
+
+            db.collection('pioneerRecords')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('date', 'desc')
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No records found</p></div>';
+                        return;
+                    }
+
+                    pioneerList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        const recordDate = formatDate(record.date).toLowerCase();
+                        
+                        // Check if the record matches the search term (date or notes)
+                        if (recordDate.includes(searchTerm) || 
+                            (record.notes && record.notes.toLowerCase().includes(searchTerm))) {
+                            const totalMinutes = (record.hours * 60) + (record.minutes || 0);
+                            const hours = Math.floor(totalMinutes / 60);
+                            const minutes = totalMinutes % 60;
+                            
+                            const recordItem = document.createElement('div');
+                            recordItem.className = 'record-item';
+                            recordItem.innerHTML = `
+                                <div class="record-info">
+                                    <div class="contact-name">${formatDate(record.date)}</div>
+                                    <div class="record-details">
+                                        <span><i class="fas fa-clock"></i> ${hours}h ${minutes}m</span>
+                                        ${record.studies ? `<span><i class="fas fa-book-bible"></i> ${record.studies} studies</span>` : ''}
+                                        ${record.returnVisits ? `<span><i class="fas fa-people-arrows"></i> ${record.returnVisits} return visits</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="record-actions">
+                                    <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                    <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `;
+                            pioneerList.appendChild(recordItem);
+                        }
+                    });
+
+                    if (pioneerList.children.length === 0) {
+                        pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No records match your search</p></div>';
+                    } else {
+                        // Add event listeners to edit and delete buttons
+                        document.querySelectorAll('.edit-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openPioneerModal(btn.dataset.id);
+                            });
+                        });
+
+                        document.querySelectorAll('.delete-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                deletePioneerRecord(btn.dataset.id);
+                            });
+                        });
+
+                        // Add click event to record items
+                        document.querySelectorAll('.record-item').forEach(item => {
+                            item.addEventListener('click', (e) => {
+                                if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                    const id = item.querySelector('.edit-btn').dataset.id;
+                                    openPioneerModal(id);
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching pioneer records:', error);
+                    pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error searching records</p></div>';
+                });
+        }
+
+        function searchPublisherRecords() {
+            const searchTerm = publisherSearch.value.toLowerCase();
+            
+            if (!searchTerm) {
+                loadPublisherRecords();
+                return;
+            }
+
+            db.collection('publisherRecords')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('date', 'desc')
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-user"></i><p>No records found</p></div>';
+                        return;
+                    }
+
+                    publisherList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        const recordDate = formatDate(record.date).toLowerCase();
+                        
+                        // Check if the record matches the search term (date or notes)
+                        if (recordDate.includes(searchTerm) || 
+                            (record.notes && record.notes.toLowerCase().includes(searchTerm))) {
+                            const recordItem = document.createElement('div');
+                            recordItem.className = 'record-item';
+                            recordItem.innerHTML = `
+                                <div class="record-info">
+                                    <div class="contact-name">${formatDate(record.date)}</div>
+                                    <div class="record-details">
+                                        <span><i class="fas fa-${record.participated === 'yes' ? 'check' : 'times'}"></i> ${record.participated === 'yes' ? 'Participated' : 'Did not participate'}</span>
+                                        ${record.studies ? `<span><i class="fas fa-book-bible"></i> ${record.studies} studies</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="record-actions">
+                                    <button class="edit-btn" data-id="${doc.id}"><i class="fas fa-edit"></i></button>
+                                    <button class="delete-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `;
+                            publisherList.appendChild(recordItem);
+                        }
+                    });
+
+                    if (publisherList.children.length === 0) {
+                        publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>No records match your search</p></div>';
+                    } else {
+                        // Add event listeners to edit and delete buttons
+                        document.querySelectorAll('.edit-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openPublisherModal(btn.dataset.id);
+                            });
+                        });
+
+                        document.querySelectorAll('.delete-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                deletePublisherRecord(btn.dataset.id);
+                            });
+                        });
+
+                        // Add click event to record items
+                        document.querySelectorAll('.record-item').forEach(item => {
+                            item.addEventListener('click', (e) => {
+                                if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+                                    const id = item.querySelector('.edit-btn').dataset.id;
+                                    openPublisherModal(id);
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching publisher records:', error);
+                    publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error searching records</p></div>';
+                });
+        }
+
+        // Save functions
+        function saveContact(e) {
+            e.preventDefault();
+            
+            const contactData = {
+                name: document.getElementById('contact-name').value,
+                phone: document.getElementById('contact-phone').value,
+                address: document.getElementById('contact-address').value,
+                publication: document.getElementById('contact-publication').value,
+                returnDate: document.getElementById('contact-date').value,
+                returnTime: document.getElementById('contact-time').value,
+                status: document.getElementById('contact-status').value,
+                notes: document.getElementById('contact-notes').value,
+                userId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (!contactData.name) {
+                showNotification('Please enter a name', true);
+                return;
+            }
+
+            if (currentContactId) {
+                // Update existing contact
+                delete contactData.createdAt; // Don't update the created timestamp
+                db.collection('contacts').doc(currentContactId).update(contactData)
+                    .then(() => {
+                        showNotification('Contact updated successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error updating contact:', error);
+                        showNotification('Error updating contact', true);
+                    });
+            } else {
+                // Add new contact
+                db.collection('contacts').add(contactData)
+                    .then(() => {
+                        showNotification('Contact added successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error adding contact:', error);
+                        showNotification('Error adding contact', true);
+                    });
+            }
+        }
+
+        function savePioneerRecord(e) {
+            e.preventDefault();
+            
+            const pioneerData = {
+                date: document.getElementById('pioneer-date').value,
+                hours: parseFloat(document.getElementById('pioneer-hours').value) || 0,
+                minutes: parseInt(document.getElementById('pioneer-minutes').value) || 0,
+                studies: parseInt(document.getElementById('pioneer-studies').value) || 0,
+                returnVisits: parseInt(document.getElementById('pioneer-return-visits').value) || 0,
+                notes: document.getElementById('pioneer-notes').value,
+                userId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (!pioneerData.date) {
+                showNotification('Please enter a date', true);
+                return;
+            }
+
+            if (pioneerData.hours <= 0) {
+                showNotification('Please enter at least some hours', true);
+                return;
+            }
+
+            if (currentPioneerId) {
+                // Update existing record
+                delete pioneerData.createdAt; // Don't update the created timestamp
+                db.collection('pioneerRecords').doc(currentPioneerId).update(pioneerData)
+                    .then(() => {
+                        showNotification('Pioneer record updated successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error updating pioneer record:', error);
+                        showNotification('Error updating pioneer record', true);
+                    });
+            } else {
+                // Add new record
+                db.collection('pioneerRecords').add(pioneerData)
+                    .then(() => {
+                        showNotification('Pioneer record added successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error adding pioneer record:', error);
+                        showNotification('Error adding pioneer record', true);
+                    });
+            }
+        }
+
+        function savePublisherRecord(e) {
+            e.preventDefault();
+            
+            const publisherData = {
+                date: document.getElementById('publisher-date').value,
+                studies: parseInt(document.getElementById('publisher-studies').value) || 0,
+                participated: document.getElementById('publisher-participated').value,
+                notes: document.getElementById('publisher-notes').value,
+                userId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (!publisherData.date) {
+                showNotification('Please enter a date', true);
+                return;
+            }
+
+            if (currentPublisherId) {
+                // Update existing record
+                delete publisherData.createdAt; // Don't update the created timestamp
+                db.collection('publisherRecords').doc(currentPublisherId).update(publisherData)
+                    .then(() => {
+                        showNotification('Publisher record updated successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error updating publisher record:', error);
+                        showNotification('Error updating publisher record', true);
+                    });
+            } else {
+                // Add new record
+                db.collection('publisherRecords').add(publisherData)
+                    .then(() => {
+                        showNotification('Publisher record added successfully');
+                        closeAllModals();
+                    })
+                    .catch(error => {
+                        console.error('Error adding publisher record:', error);
+                        showNotification('Error adding publisher record', true);
+                    });
+            }
+        }
+
+        // Delete functions
+        function deleteContact(id) {
+            if (confirm('Are you sure you want to delete this contact?')) {
+                db.collection('contacts').doc(id).delete()
+                    .then(() => {
+                        showNotification('Contact deleted successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting contact:', error);
+                        showNotification('Error deleting contact', true);
+                    });
+            }
+        }
+
+        function deletePioneerRecord(id) {
+            if (confirm('Are you sure you want to delete this pioneer record?')) {
+                db.collection('pioneerRecords').doc(id).delete()
+                    .then(() => {
+                        showNotification('Pioneer record deleted successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting pioneer record:', error);
+                        showNotification('Error deleting pioneer record', true);
+                    });
+            }
+        }
+
+        function deletePublisherRecord(id) {
+            if (confirm('Are you sure you want to delete this publisher record?')) {
+                db.collection('publisherRecords').doc(id).delete()
+                    .then(() => {
+                        showNotification('Publisher record deleted successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting publisher record:', error);
+                        showNotification('Error deleting publisher record', true);
+                    });
+            }
+        }
+
+        // Stats functions
+        function showPioneerStats() {
+            statsModal.classList.add('active');
+            document.getElementById('stats-modal-title').textContent = 'Pioneer Monthly Statistics';
+            
+            // Get current month and year
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // Months are 0-indexed
+            const currentYear = now.getFullYear();
+            
+            // Calculate the first and last day of the current month
+            const firstDay = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`;
+            const lastDay = new Date(currentYear, currentMonth, 0).getDate();
+            const lastDayFormatted = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
+            
+            // Query records for the current month
+            db.collection('pioneerRecords')
+                .where('userId', '==', currentUser.uid)
+                .where('date', '>=', firstDay)
+                .where('date', '<=', lastDayFormatted)
+                .get()
+                .then(snapshot => {
+                    let totalHours = 0;
+                    let totalMinutes = 0;
+                    let totalStudies = 0;
+                    let totalReturnVisits = 0;
+                    let daysReported = 0;
+                    
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        totalHours += record.hours || 0;
+                        totalMinutes += record.minutes || 0;
+                        totalStudies += record.studies || 0;
+                        totalReturnVisits += record.returnVisits || 0;
+                        daysReported++;
+                    });
+                    
+                    // Convert extra minutes to hours
+                    totalHours += Math.floor(totalMinutes / 60);
+                    totalMinutes = totalMinutes % 60;
+                    
+                    // Calculate average hours per day
+                    const avgHours = daysReported > 0 ? (totalHours + (totalMinutes / 60)) / daysReported : 0;
+                    
+                    // Calculate progress towards 70 hours (standard pioneer requirement)
+                    const progressPercentage = Math.min(Math.round((totalHours / 70) * 100), 100);
+                    
+                    // Update the stats display
+                    document.getElementById('total-hours').textContent = `${totalHours}h ${totalMinutes}m`;
+                    document.getElementById('avg-hours').textContent = avgHours.toFixed(1) + 'h';
+                    document.getElementById('total-studies').textContent = totalStudies;
+                    document.getElementById('total-return-visits').textContent = totalReturnVisits;
+                    document.getElementById('hours-progress').style.width = `${progressPercentage}%`;
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                    document.getElementById('stats-modal-title').textContent = 'Error Loading Stats';
+                });
+        }
+
+        function showPublisherStats() {
+            statsModal.classList.add('active');
+            document.getElementById('stats-modal-title').textContent = 'Publisher Monthly Statistics';
+            
+            // Get current month and year
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // Months are 0-indexed
+            const currentYear = now.getFullYear();
+            
+            // Calculate the first and last day of the current month
+            const firstDay = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-01`;
+            const lastDay = new Date(currentYear, currentMonth, 0).getDate();
+            const lastDayFormatted = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
+            
+            // Query records for the current month
+            db.collection('publisherRecords')
+                .where('userId', '==', currentUser.uid)
+                .where('date', '>=', firstDay)
+                .where('date', '<=', lastDayFormatted)
+                .get()
+                .then(snapshot => {
+                    let totalStudies = 0;
+                    let daysParticipated = 0;
+                    let totalDays = 0;
+                    
+                    snapshot.forEach(doc => {
+                        const record = doc.data();
+                        totalStudies += record.studies || 0;
+                        if (record.participated === 'yes') {
+                            daysParticipated++;
+                        }
+                        totalDays++;
+                    });
+                    
+                    // Calculate participation percentage
+                    const participationPercentage = totalDays > 0 ? Math.round((daysParticipated / totalDays) * 100) : 0;
+                    
+                    // Update the stats display
+                    document.getElementById('total-hours').textContent = `${daysParticipated} days`;
+                    document.getElementById('avg-hours').textContent = `${participationPercentage}% participation`;
+                    document.getElementById('total-studies').textContent = totalStudies;
+                    document.getElementById('total-return-visits').textContent = 'N/A';
+                    document.getElementById('hours-progress').style.width = `${participationPercentage}%`;
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                    document.getElementById('stats-modal-title').textContent = 'Error Loading Stats';
+                });
+        }
+
+        function shareStatsViaWhatsApp() {
+            const title = document.getElementById('stats-modal-title').textContent;
+            const totalHours = document.getElementById('total-hours').textContent;
+            const avgHours = document.getElementById('avg-hours').textContent;
+            const totalStudies = document.getElementById('total-studies').textContent;
+            
+            const message = `${title}\n\nTotal Hours: ${totalHours}\nAverage: ${avgHours}\nBible Studies: ${totalStudies}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Utility functions
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'completed': return 'check';
+                case 'not-interested': return 'times';
+                default: return 'clock';
+            }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function clearAllLists() {
+            contactsList.innerHTML = '<div class="empty-state"><i class="fas fa-address-book"></i><p>No contacts found</p><button id="empty-add-contact-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Contact</button></div>';
+            pioneerList.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No pioneer records found</p><button id="empty-add-pioneer-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button></div>';
+            publisherList.innerHTML = '<div class="empty-state"><i class="fas fa-user"></i><p>No publisher records found</p><button id="empty-add-publisher-btn" class="add-btn"><i class="fas fa-plus"></i> Add Your First Record</button></div>';
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
